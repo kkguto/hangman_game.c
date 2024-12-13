@@ -14,6 +14,45 @@ void menu(){
     printf("\nSua escolha eh: ");
 }
 
+char *palavras_arquivos(const char *nome_arquivo){
+    FILE *arquivo = fopen(nome_arquivo, "r");
+
+    if(arquivo == NULL){
+        printf("\n\tErro ao abrir o arquivo: %s\n", nome_arquivo);
+        perror("Motivo");
+        system("pause");
+        return NULL;
+    }
+
+    char palavras[100][60];
+    int total_palavras = 0;
+
+    while (fscanf(arquivo, "%s", palavras[total_palavras]) != EOF) {
+        total_palavras++;
+    }
+    fclose(arquivo);
+    
+    if(total_palavras == 0){
+        printf("\n\tO arquivo está vazio.\n");
+        return NULL;
+    }
+
+    srand(time(NULL));
+    
+    int indice = rand() % total_palavras;
+    char *palavra_escolhida = malloc(strlen(palavras[indice]) + 1);  // Corrigido
+
+    if (palavra_escolhida == NULL) {
+        printf("\n\tErro ao alocar memória.\n");
+        return NULL;
+    }
+
+    strcpy(palavra_escolhida, palavras[indice]);
+    
+    return palavra_escolhida;  
+}
+
+
 void verifacador_palavra(const char *palavra_secreta, const char *resposta, bool *continuar){
 
     if(strcmp(palavra_secreta, resposta) == 0){
@@ -132,6 +171,58 @@ void jogo(const char *palavra_secreta){
     }
 }
 
+void computador_HangmanGame(){
+    int escolha;
+    while (1){
+
+        system("cls");
+
+        printf("\n Escolha um dos Temas abaixo : ");
+        printf("\n==============================");
+        printf("\n[1] Animais");
+        printf("\n[2] Cores");
+        printf("\n[3] Frutas");
+        printf("\n[4] Objetos");
+        printf("\n[5] Paises");
+        printf("\n==============================");
+        printf("\nSua escolha eh (Digite 0 se deseja Encerrar): ");
+        scanf("%d", &escolha);
+
+        if(escolha == 0){
+            break;
+        }   
+        char *palavra_secreta = NULL;
+
+        switch (escolha){
+        case 1:
+            palavra_secreta = palavras_arquivos("animais.txt");
+            break;
+        case 2:
+            palavra_secreta = palavras_arquivos("cores.txt");
+            break;
+        case 3:
+            palavra_secreta = palavras_arquivos("frutas.txt");
+
+            break;
+        case 4:
+            palavra_secreta = palavras_arquivos("objetos.txt");
+
+            break;
+        case 5:
+            palavra_secreta = palavras_arquivos("paises.txt");
+            break;
+        default:
+            printf("\nOpçao Invalida. ");
+            system("pause");
+            continue;
+        }
+        if(palavra_secreta != NULL){
+            jogo(palavra_secreta);
+            free(palavra_secreta);
+        }    
+    }
+}
+
 int main(){ 
 
     char escolha[5];
@@ -152,7 +243,7 @@ int main(){
             jogo(palavra_secreta);
 
         }else if(strcmp(escolha, "2") == 0){
-
+            computador_HangmanGame();
         }else{
             printf("\nOpcao Invalida. ");
             system("pause");
